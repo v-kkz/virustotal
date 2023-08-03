@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Import and print JSON data in table on HTML page</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script>
+    function getReportPdf(){
+      // initiate pdf canvas and change download status
+      this.setState({ pdfDoc: new jsPDF(), downloadStatus: { status: "Processing pdf...", message: "We are processing your report. Please wait !", active: true } })
+
+      return this.addCanvasImageToPdf("report-pdf-course-page").then(() => {
+        Promise.all(apiPromises)
+          .then(() => {
+            // Save the report in user local system
+            this.state.pdfDoc.save((`IP_reputation.pdf`).toLocaleLowerCase())
+
+            this.setState({ downloadStatus: { status: "Save Report Again", message: "Report saved successfully.", active: false } })
+          }).catch(e => {
+            console.log("Error: pdf download failed " + e)
+            this.setState({ downloadStatus: { status: "Save Report", message: "Failed to save report. Try again !", active: false } })
+          })
+      }).catch(e => {
+        console.log("Error: pdf download failed " + e)
+        this.setState({ downloadStatus: { status: "Save Report", message: "Failed to save report. Try again !", active: false } })
+      })
+    }
+    async function addCanvasImageToPdf(id = "", addPage = false) {
+      return html2canvas(document.querySelector("#" + id), {
+        image: { type: 'jpeg', quality: 1 },
+        logging: false,
+        letterRendering: true
+      }).then(canvas => {
+        if (addPage) this.state.pdfDoc.addPage()
+
+        const doc = this.state.pdfDoc
+
+        const canvasImg = canvas.toDataURL('img/jpeg', 1)
+
+        const x = 5 // canvas x-coordinate
+        const y = 8 // canvas y-coordinate
+        const imgWidth = 200;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        doc.addImage(canvasImg, 'JPEG', x, y, imgWidth, imgHeight, id, "MEDIUM")
+
+        this.setState({ pdfDoc: doc })
+      });
+    }
+  </script>
+  <script>
+    // Load the JSON file
+    fetch("output.json")
+      .then(response => response.json())
+      .then(data => {
+        // Create the table rows and cells
+        const tableBody = document.querySelector("#json-table tbody");
+        for (const ipAddress in data.ipAddresses) {
+          const row = document.createElement("tr");
+          const ipAddressCell = document.createElement("td");
+          ipAddressCell.textContent = ipAddress;
+          row.appendChild(ipAddressCell);
+          const counts = data.ipAddresses[ipAddress];
+          for (const count in counts) {
+            const countCell = document.createElement("td");
+            countCell.textContent = counts[count];
+            row.appendChild(countCell);
+          }
+          tableBody.appendChild(row);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  </script>
+</head>
+
+<body>
+
+  <button onclick=getReportPdf()>Download
+    as PDF</button>
+
+  <table id="json-table" style="border: 1px solid black; border-spacing: 20px; ">
+    <colgroup>
+      <col width="110px">
+      <col width="50px">
+      <col width="50px">
+      <col width="50px">
+      <col width="50px">
+      <col width="50px">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>IP Address</th>
+        <th>Harmless</th>
+        <th>Malicious</th>
+        <th>Suspicious</th>
+        <th>Undetected</th>
+        <th>Timeout</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+</body>
+
+</html>

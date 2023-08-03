@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Import and print JSON data in table on HTML page</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script>
+    function downloadAsPDF() {
+      const pdf = new jsPDF('p', 'pt', 'letter');
+
+      // Add HTML content to PDF
+      const html = document.querySelector('body').innerHTML;
+      const options = {
+        width: 800,
+        elementHandlers: {
+          script: (element, renderer) => false
+        },
+        tableWidth: '600px'
+      };
+      pdf.fromHTML(html, 15, 15, options);
+
+      // Save PDF as file
+      const filename = 'webpage.pdf';
+      const blob = pdf.output('blob');
+      saveAs(blob, filename);
+    }
+  </script>
+   <script>
+    // Load the JSON file
+    fetch("output.json")
+      .then(response => response.json())
+      .then(data => {
+        // Create the table rows and cells
+        const tableBody = document.querySelector("#json-table tbody");
+        for (const ipAddress in data.ipAddresses) {
+          const row = document.createElement("tr");
+          const ipAddressCell = document.createElement("td");
+          ipAddressCell.textContent = ipAddress;
+          row.appendChild(ipAddressCell);
+          const counts = data.ipAddresses[ipAddress];
+          for (const count in counts) {
+            const countCell = document.createElement("td");
+            countCell.textContent = counts[count];
+            row.appendChild(countCell);
+          }
+          tableBody.appendChild(row);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  </script>
+</head>
+
+<body>
+
+  <button onclick="alert(' Sorry! This function is on proggress. \n Please save this page and use any 3rd party webite to convert to pdf. \n\n Thank You')">Download as PDF</button>
+
+  <table id="json-table" style="border: 1px solid black; border-spacing: 20px; ">
+    <colgroup>
+      <col width="110px">
+      <col width="50px">
+      <col width="50px">
+      <col width="50px">
+      <col width="50px">
+      <col width="50px">
+    </colgroup>
+    <thead>
+      <tr >
+        <th>IP Address</th>
+        <th>Harmless</th>
+        <th>Malicious</th>
+        <th>Suspicious</th>
+        <th>Undetected</th>
+        <th>Timeout</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+ 
+</body>
+
+</html>

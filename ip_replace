@@ -1,0 +1,13 @@
+const fs = require('fs');
+
+const filename = 'iplist.txt';
+let ips = [];
+fs.readFile(filename, 'utf8', (err, data) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+
+  ips = data.split(",");
+});
+console.log(ips.length);

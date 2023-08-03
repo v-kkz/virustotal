@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>File Content Upload Example</title>
+
+  <style>
+    #file {
+      display: none;
+    }
+
+    #up_but {
+      border: 1.5px solid #007bff;
+      background-color: #fff;
+      color: #007bff;
+      border-radius: 9px;
+      padding: 7px 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div style="text-align:center;">
+    <img src="assets/img/vt.png" alt="virus total" /><br>
+    <p
+      style="display:inline-block;font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;font-size: 17px;">
+      Analyse suspicious IPs and Gives you the reputation flags<br> set by different
+      vendors</p>
+  </div>
+  <div style="text-align: center; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+    <form>
+      <label for="file" class="file-style">
+        <p> Click to select File</p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#007bdc"
+          class="bi bi-file-earmark-binary-fill" viewBox="0 0 16 16">
+          <path
+            d="M5.526 10.273c-.542 0-.832.563-.832 1.612 0 .088.003.173.006.252l1.559-1.143c-.126-.474-.375-.72-.733-.72zm-.732 2.508c.126.472.372.718.732.718.54 0 .83-.563.83-1.614 0-.085-.003-.17-.006-.25l-1.556 1.146z" />
+          <path
+            d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-2.45 8.385c0 1.415-.548 2.206-1.524 2.206C4.548 14.09 4 13.3 4 11.885c0-1.412.548-2.203 1.526-2.203.976 0 1.524.79 1.524 2.203zm3.805 1.52V14h-3v-.595h1.181V10.5h-.05l-1.136.747v-.688l1.19-.786h.69v3.633h1.125z" />
+        </svg><br>
+        <!-- <button class="up_but"> Choose File </button> -->
+      </label>
+      <input type="file" id="file" name="file">
+      <br>
+      <div style="display: inline;">
+
+          <button
+          style="border: 1.5px solid #007bff;width:116px; background-color: #fff; color: #007bff;border-radius: 9px; padding: 7px;">
+          <a href="ips/vtoutput.html" style="color: #007bff; text-decoration: none;"> View Last Result </a></button>
+      
+          <input type="button" value="Upload File" id='up_but' onclick="uploadFile()">
+      </div>
+    </form>
+    <p id="fileStatus" style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"></p>
+    <div id="result"></div>
+    <div id="new-page-button" style="display: none;">
+      <button onclick="loadNewPage()"
+        style="border: 1.5px solid #007bff; background-color: #fff; color: #007bff;border-radius: 9px; padding: 7px 20px;">
+        View Result </button>
+    </div>
+    <p style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: 12px;"> By
+      submitting data above, you are agreeing to our Terms of Service and Privacy Policy, and to the sharing of <br>
+      Sample submission with the security community. Please do not submit any personal information; <br> VirusTotal is
+      not responsible for the contents of your submission. Learn more.
+    </p>
+  </div>
+  <script>
+    function uploadFile() {
+      const fileInput = document.getElementById('file');
+      const fileStatus = document.getElementById('fileStatus');
+      if (fileInput.files.length > 0) {
+        fileStatus.style.color = 'orange'
+        fileStatus.innerText = "File Uploaded.\nOnce Processed a 'View Result' button will appear";
+        const fileInput = document.querySelector('#file');
+        const file = fileInput.files[0];
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/upload');
+        xhr.setRequestHeader('Content-Type', 'text/plain');
+        xhr.addEventListener('load', function () {
+          const resultDiv = document.querySelector('#result');
+          if (this.status === 302 || this.status === 200) {
+            const newPageButton = document.querySelector('#new-page-button');
+            newPageButton.style.display = 'block';
+            fileStatus.innerText = '';
+          }
+        });
+        xhr.send(file);
+
+      } else {
+        fileStatus.style.color = 'red'
+        fileStatus.innerText = 'No file selected.';
+      }
+    }
+    function loadNewPage() {
+      window.location.href = '/ips/vtoutput.html';
+    }
+  </script>
+</body>
+
+</html>

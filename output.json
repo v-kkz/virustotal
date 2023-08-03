@@ -1,0 +1,31 @@
+{"ipAddresses": {"85.15.190.226":{
+    "harmless": 59,
+    "malicious": 9,
+    "suspicious": 0,
+    "undetected": 19,
+    "timeout": 0
+},"84.22.18.84":{
+    "harmless": 62,
+    "malicious": 3,
+    "suspicious": 1,
+    "undetected": 22,
+    "timeout": 0
+},"83.167.23.169":{
+    "harmless": 62,
+    "malicious": 3,
+    "suspicious": 2,
+    "undetected": 20,
+    "timeout": 0
+},"61.178.138.10":{
+    "harmless": 59,
+    "malicious": 6,
+    "suspicious": 2,
+    "undetected": 20,
+    "timeout": 0
+},"61.154.122.122":{
+    "harmless": 58,
+    "malicious": 9,
+    "suspicious": 1,
+    "undetected": 19,
+    "timeout": 0
+}}}
